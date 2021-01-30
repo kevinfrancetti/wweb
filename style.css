@@ -1,0 +1,37 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: brown;
+}
+
+section {
+  text-align: center;
+}
+
+button:hover {
+  color: #33d21e;
+  background-color: darkblue;
+  border: thick double #32a1ce;
+}
+
+.game--container {
+  display: -ms-grid;
+  display: grid;
+  border-width: thick;
+  border-color: blueviolet;
+  -ms-grid-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
+  margin: 50px auto;
+  cursor: crosshair;
+}
+
+.cell {
+  border: 5px solid;
+  border-color: red green blue yellow;
+  margin: 10px 10px 10px 10px;
+}
+
+.cell:hover {
+  border-color: black;
+  margin: 12px 12px 12px 12px;
+}
+/*# sourceMappingURL=style.css.map */
