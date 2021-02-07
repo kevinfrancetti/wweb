@@ -1,9 +1,46 @@
+import {sayHi} from './sayhi.js';
+import {Hub, factory} from './tree.js';
+sayHi();
+
+factory();
+//let x1: number = 3;
+//let x2: number = 4;
+//Hub(x1,x2);
+
+
 const statusDisplay: Element = document.querySelector(".game--status");
-const cellList: NodeListOf<Element> = document.querySelectorAll(".cell");
-let mmm = 4;
+const cellList: NodeListOf<Element> = document.querySelectorAll("button, .cell");
 
 for (let i = 0; i < cellList.length; i++) {
-    cellList[i].addEventListener('click', spamAllert);
+    cellList[i].addEventListener('click', handleCellClick);
+}
+
+function tryme(val: () => void){
+    val();
+    mimi();
+}
+
+let mimi = () => {
+    console.log('ciao bro madonna merda');
+}
+
+tryme(() => console.log('arrow ') );
+tryme(mimi);
+tryme(mimi);
+
+function handleCellClick(event: Event) {
+    let target: EventTarget = event.target;
+
+    if (target.constructor.name == HTMLDivElement.name) {
+        console.log("This is a HTMLDivElement");
+        (target as HTMLDivElement).innerText = 'AIDS';
+    } else if (target.constructor.name == HTMLButtonElement.name) {
+        console.log("This is a HTMLButtonElement");
+    }
+
+    console.log(typeof event, typeof target, target.constructor.name, event.type);
+
+    console.log(((target as HTMLDivElement).getAttribute('data-cell-index')));
 }
 
 let gameActive = true;
@@ -15,7 +52,6 @@ function newContent() {
     //document.close();
 }
 
-
 function spamAllert() {
     window.alert("DIO CAN");
 }
@@ -24,26 +60,4 @@ function Yolo() {
     console.log("From Yeolo", this);
 }
 
-var perimeter = function (a, b) {
-    console.log(2 * a + 2 * b);
-}
-
-
-var Rectangle = {
-    height: 3,
-    width: 4,
-    area: function () {
-        console.log("Area: " + this.height * this.width);
-        console.log(this);
-    }
-}
-
-function test(){
-    console.log(this);
-}
-let cat = {
-    someMethod: function(){
-        console.log(this);
-        test();
-    }
-}
+export {mimi as culo};
