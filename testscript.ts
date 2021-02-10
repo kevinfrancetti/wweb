@@ -1,20 +1,17 @@
-function User(email: string, name: string){
-    this.email = email;
-    this.name = name;
-    console.log('User constructor fired');
-    /*
-    this.login = function(){
-        console.log(this.email, 'has logd in');
-    }
-    */
+function User(email: string, name: string) {
+  this.email = email;
+  this.name = name;
+  console.log('User constructor fired');
+  /*
+  this.login = function(){
+      console.log(this.email, 'has logd in');
+  }
+  */
+  User.prototype.arrowLogin = () => console.log(this);
+  User.prototype.login = function () {
+    console.log(this, this.email, 'has logd in');
+  }
 }
-
-User.culo = "fagiano";
-User.prototype.login = function(){
-        console.log(this.email, 'has logd in');
-}
-
-
 
 let u1 = Object.create(User.prototype);
 u1.constructor('PoP', 'POPO');
@@ -30,7 +27,7 @@ function Shape() {
 }
 
 // superclass method
-Shape.prototype.move = function(x, y) {
+Shape.prototype.move = function (x, y) {
   this.x += x;
   this.y += y;
   console.info('Shape moved.');

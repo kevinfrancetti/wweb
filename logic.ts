@@ -1,39 +1,34 @@
 import {sayHi} from './sayhi.js';
-import {Hub, factory} from './tree.js';
-sayHi();
+import {Hub} from './tree.js';
 
-factory();
-//let x1: number = 3;
-//let x2: number = 4;
-//Hub(x1,x2);
-
+//Debug proupose
+console.log('type for import stuff for debugging: import(\'/scripts/logic.js\').then( m => module = m); ');
 
 const statusDisplay: Element = document.querySelector(".game--status");
 const cellList: NodeListOf<Element> = document.querySelectorAll("button, .cell");
 
+let gameSize: number = 3;
+let gameMemory = [];
+
+for(let i = 0; i < gameSize; i++){
+    gameMemory[i] = [];
+    for(let j = 0; j < gameSize; j++){
+        gameMemory[i][j] = undefined;
+    }
+}
+
 for (let i = 0; i < cellList.length; i++) {
     cellList[i].addEventListener('click', handleCellClick);
 }
-
-function tryme(val: () => void){
-    val();
-    mimi();
-}
-
-let mimi = () => {
-    console.log('ciao bro madonna merda');
-}
-
-tryme(() => console.log('arrow ') );
-tryme(mimi);
-tryme(mimi);
 
 function handleCellClick(event: Event) {
     let target: EventTarget = event.target;
 
     if (target.constructor.name == HTMLDivElement.name) {
         console.log("This is a HTMLDivElement");
+        (target as HTMLDivElement).getAttribute('data-cell-index');
         (target as HTMLDivElement).innerText = 'AIDS';
+        (target as HTMLDivElement).setAttribute('cazzo', 'legno');
     } else if (target.constructor.name == HTMLButtonElement.name) {
         console.log("This is a HTMLButtonElement");
     }
@@ -60,4 +55,4 @@ function Yolo() {
     console.log("From Yeolo", this);
 }
 
-export {mimi as culo};
+export {spamAllert as culo, Hub, gameMemory};
