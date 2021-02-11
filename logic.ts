@@ -9,7 +9,7 @@ console.log('type for import stuff for debugging: import(\'/scripts/logic.js\').
 const cellList: NodeListOf<Element> = document.querySelectorAll(".cell");
 const buttonList: NodeListOf<Element> = document.querySelectorAll("button");
 const gameSize: number = 3;
-const gameMemory = [];
+const gameMemory: object[] = [];
 
 for (let i = 0; i < gameSize; i++) {
     gameMemory[i] = [];
@@ -18,22 +18,42 @@ for (let i = 0; i < gameSize; i++) {
     }
 }
 
-(() => {
-    for (let i = 0; i < cellList.length; i++) {
-        cellList[i].setAttribute('data-x', `${i%gameSize}`);
-        cellList[i].setAttribute('data-y', `${Math.trunc(i/gameSize)}`);
-        cellList[i].addEventListener('click', handleCellClick);
-        gameMemory[i%gameSize][Math.trunc(i/gameSize)] = cellList [i];
-    }
-})();
+for (let i = 0; i < cellList.length; i++) {
+    cellList[i].setAttribute('data-x', `${i % gameSize}`);
+    cellList[i].setAttribute('data-y', `${Math.trunc(i / gameSize)}`);
+    cellList[i].addEventListener('click', handleCellClick);
+    gameMemory[i % gameSize][Math.trunc(i / gameSize)] = cellList[i];
+}
+
 buttonList.forEach(btn => btn.addEventListener('click', handleCellClick));
 //###GAME SETUP
 
 
 const statusDisplay: Element = document.querySelector(".game--status");
 
+
+function checkWin(matrix: object[], label: string){
+
+    
+}
+
+
+//AKA GAME LOOP
 function handleCellClick(event: Event) {
+
+
+
+    //PROCESS IMPUT
     let target: EventTarget = event.target;
+    let x: number = parseInt((target as HTMLDivElement).getAttribute('data-x'));
+    let y: number = parseInt((target as HTMLDivElement).getAttribute('data-y'));
+    console.log(x, y);
+    //UPDATE STATE
+
+
+    //RENDER
+
+
 
     if (target.constructor.name == HTMLDivElement.name) {
         console.log("This is a HTMLDivElement");
@@ -44,9 +64,8 @@ function handleCellClick(event: Event) {
         console.log("This is a HTMLButtonElement");
     }
 
-    console.log(typeof event, typeof target, target.constructor.name, event.type);
-
-    console.log(((target as HTMLDivElement).getAttribute('data-cell-index')));
+    //console.log(typeof event, typeof target, target.constructor.name, event.type);
+    //console.log(((target as HTMLDivElement).getAttribute('data-cell-index')));
 }
 
 function newContent() {
@@ -55,4 +74,4 @@ function newContent() {
     //document.close();
 }
 
-export {Hub, gameMemory};
+export { Hub, gameMemory };
