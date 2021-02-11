@@ -10,6 +10,11 @@ const cellList: NodeListOf<Element> = document.querySelectorAll(".cell");
 const buttonList: NodeListOf<Element> = document.querySelectorAll("button");
 const gameSize: number = 3;
 const gameMemory: object[] = [];
+enum GameTurn {
+    X = 'X',
+    O = 'O'
+}
+let currentTurn: string = GameTurn.X;
 
 for (let i = 0; i < gameSize; i++) {
     gameMemory[i] = [];
@@ -22,19 +27,17 @@ for (let i = 0; i < cellList.length; i++) {
     cellList[i].setAttribute('data-x', `${i % gameSize}`);
     cellList[i].setAttribute('data-y', `${Math.trunc(i / gameSize)}`);
     cellList[i].addEventListener('click', handleCellClick);
+    cellList[i].innerHTML = 'R';
     gameMemory[i % gameSize][Math.trunc(i / gameSize)] = cellList[i];
 }
 
 buttonList.forEach(btn => btn.addEventListener('click', handleCellClick));
-//###GAME SETUP
+//const statusDisplay: Element = document.querySelector(".game--status");
 
 
-const statusDisplay: Element = document.querySelector(".game--status");
+function checkWin(matrix: object[], label: string) {
 
 
-function checkWin(matrix: object[], label: string){
-
-    
 }
 
 
@@ -42,15 +45,15 @@ function checkWin(matrix: object[], label: string){
 function handleCellClick(event: Event) {
 
 
-
-    //PROCESS IMPUT
-    let target: EventTarget = event.target;
-    let x: number = parseInt((target as HTMLDivElement).getAttribute('data-x'));
-    let y: number = parseInt((target as HTMLDivElement).getAttribute('data-y'));
-    console.log(x, y);
-    //UPDATE STATE
-
-
+    //###STAGE_1 PROCESS IMPUT
+    let target: HTMLDivElement = (event.target as HTMLDivElement);
+    let x: number = parseInt(target.getAttribute('data-x'));
+    let y: number = parseInt(target.getAttribute('data-y'));
+    let cellInnerHtml: string = target.innerHTML;
+    
+    //###STAGE_2 UPDATE STATE
+    if(cellInnerHtml == '') console.log('merda');
+    
     //RENDER
 
 
