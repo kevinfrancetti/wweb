@@ -1,14 +1,29 @@
 $color: blueviolet;
 $background-color: rgb(97, 55, 88); 
 
+html{
+    height: 100%;
+    background-color: rgb(56, 84, 161);
+}
+
 body{
+    padding: 5px;
+    border: 2px solid black;
+    
     font-family: Arial, Helvetica, sans-serif;
     color: rgb(42, 165, 52);
-    background-color: $background-color
+    background-color: rgb(0, 0, 255);
+    background-clip: border-box;
+    min-height: 90%;
 }
 
 section{
+    padding: 10px;
+    border: 5px solid #32afce;
+    margin: 0px;
+
     text-align: center;
+    background-color: rgb(49, 11, 184);
 }
 
 button:hover{
@@ -18,23 +33,41 @@ button:hover{
 }
 
 .game--container{
+    padding: 10px;
+    border: 2px solid black;
+
+    background-color: rgba(23, 23, 145, 0.726);
+
     display: grid;
-    border-width: thick;
-    border-color: $color;
     grid-template-columns: 1fr 1fr 1fr;
-    margin: 50px auto;
+    justify-items: center;
+
     cursor: crosshair;
 }
 
-
 .cell{
-    min-height: 10px;
-    border: 5px solid;
-    border-color: red green blue yellow;
-    margin: 10px 10px 10px 10px;
+    padding: 10px;
+    border: 2px solid black;
+    background-color: rgba(42, 130, 165, 0.459);
+    text-align: center;
+    height: 42px;
 }
 
 .cell:hover{
-    border-color: black;
-    margin: 12px 12px 12px 12px;
+    border-color: rgb(255, 0, 0);
+}
+
+.button--container{
+    padding: 10px;
+    border: 2px solid black;
+    margin: 20px;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    background-color: brown;
+    background-clip: content-box;
 }

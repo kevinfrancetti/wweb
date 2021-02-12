@@ -27,7 +27,7 @@ for (let i = 0; i < cellList.length; i++) {
     cellList[i].setAttribute('data-x', `${i % gameSize}`);
     cellList[i].setAttribute('data-y', `${Math.trunc(i / gameSize)}`);
     cellList[i].addEventListener('click', handleCellClick);
-    cellList[i].innerHTML = 'R';
+    cellList[i].innerHTML = '';
     gameMemory[i % gameSize][Math.trunc(i / gameSize)] = cellList[i];
 }
 
