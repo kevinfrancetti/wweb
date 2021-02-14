@@ -24,6 +24,7 @@ for (let i = 0; i < gameSize; i++) {
     }
 }
 
+//  TODO: SEPARATE HTML FROM ACTUAL CODE
 for (let i = 0; i < cells.length; i++) {
     let memPosition = mapListToSquareMatrix(i, gameSize);
     cells[i].setAttribute('data-x', `${memPosition.x}`);
@@ -79,12 +80,6 @@ function handleCellClick(event: Event) {
 
     //console.log(typeof event, typeof target, target.constructor.name, event.type);
     //console.log(((target as HTMLDivElement).getAttribute('data-cell-index')));
-}
-
-function newContent() {
-    //document.open();
-    document.write("<h1>Out with the old aids, in with the new!</h1>");
-    //document.close();
 }
 
 export { Hub, gameMemory };
