@@ -6,14 +6,15 @@ console.log('type for import stuff for debugging: import(\'/scripts/logic.js\').
 
 
 //###GAME SETUP
-const cellList: NodeListOf<Element> = document.querySelectorAll(".cell");
+const cells: NodeListOf<Element> = document.querySelectorAll(".cell");
 const buttonList: NodeListOf<Element> = document.querySelectorAll("button");
 const gameSize: number = 3;
-const gameMemory: object[] = [];
 enum GameTurn {
     X = 'X',
     O = 'O'
 }
+//#GAME STATE
+const gameMemory: object[] = [];//Memory of the game AKA game state
 let currentTurn: string = GameTurn.X;
 
 for (let i = 0; i < gameSize; i++) {
@@ -23,42 +24,43 @@ for (let i = 0; i < gameSize; i++) {
     }
 }
 
-for (let i = 0; i < cellList.length; i++) {
-    cellList[i].setAttribute('data-x', `${i % gameSize}`);
-    cellList[i].setAttribute('data-y', `${Math.trunc(i / gameSize)}`);
-    cellList[i].addEventListener('click', handleCellClick);
+for (let i = 0; i < cells.length; i++) {
+    let memPosition = mapListToSquareMatrix(i, gameSize);
+    cells[i].setAttribute('data-x', `${memPosition.x}`);
+    cells[i].setAttribute('data-y', `${memPosition.y}`);
+    cells[i].addEventListener('click', handleCellClick);
     //cellList[i].innerHTML = '';
-    gameMemory[i % gameSize][Math.trunc(i / gameSize)] = cellList[i];
+    gameMemory[memPosition.x][memPosition.y] = cells[i];
 }
-
 buttonList.forEach(btn => btn.addEventListener('click', handleCellClick));
-//const statusDisplay: Element = document.querySelector(".game--status");
 
+
+//###UTIL FUNCTIONS
+//Translates the index of a list into the coordinates of a matrix, matrix should be square.
+function mapListToSquareMatrix(listIndex: number, matrixSize: number) {
+    let result = {
+        x: listIndex % matrixSize,
+        y: Math.trunc(listIndex / matrixSize)
+    }
+    return result;
+}
 
 function checkWin(matrix: object[], label: string) {
 
-
-
-
     for (let i = 0; i < matrix.length; i++) {
         let mem = matrix[i][0].innerText;
-        if (mem == '') continue;
-        for (let j = 0; j < matrix.length; j++) {
-            
+        if (mem == '') continue;//if first square is void no point furter check
 
-
+        for (let j = 1; j < matrix.length; j++) {
+            if (matrix[i][j].innerText != mem) break;
+            if (j == matrix.length - 1) console.log('win');
         }
-
     }
-
-
 }
 
 
 //AKA GAME LOOP
 function handleCellClick(event: Event) {
-
-
     //###STAGE_1 PROCESS IMPUT
     let target: HTMLDivElement = (event.target as HTMLDivElement);
     let x: number = parseInt(target.getAttribute('data-x'));
@@ -66,17 +68,11 @@ function handleCellClick(event: Event) {
     let cellText: string = target.innerText;
 
     //###STAGE_2 UPDATE STATE
-    if (cellText == '') console.log('merda');
-
+    checkWin(gameMemory, GameTurn.X);
     //RENDER
-
-
-
     if (target.constructor.name == HTMLDivElement.name) {
         console.log("This is a HTMLDivElement");
-        (target as HTMLDivElement).getAttribute('data-cell-index');
         (target as HTMLDivElement).innerText = GameTurn.X;
-        (target as HTMLDivElement).setAttribute('cazzo', 'legno');
     } else if (target.constructor.name == HTMLButtonElement.name) {
         console.log("This is a HTMLButtonElement");
     }
