@@ -6,35 +6,44 @@ console.log('type for import stuff for debugging: import(\'/scripts/logic.js\').
 
 
 //###GAME SETUP
-const cells: NodeListOf<Element> = document.querySelectorAll(".cell");
 const buttons: NodeListOf<Element> = document.querySelectorAll("button");
-const gameSize: number = 3;
-enum GameTurn {
+enum PlayerSymbol {
     X = 'X',
     O = 'O'
 }
-let turn = GameTurn.X;
+interface GameEnviroment {
+    size: number;
+    symbol: PlayerSymbol;
+    winner: PlayerSymbol;
+    memory: object[]; //Is a square matrix
+    active: boolean;
+};
 //#GAME STATE
-const gameMemory: object[] = [];//Memory of the game AKA game state [column][rows]
-let currentTurn: string = GameTurn.X;
-
-for (let i = 0; i < gameSize; i++) {
-    gameMemory[i] = [];
-    for (let j = 0; j < gameSize; j++) {
-        gameMemory[i][j] = undefined; //Thois could be skipped
+const gameState: GameEnviroment = {
+    size: 4,
+    symbol: PlayerSymbol.X,
+    winner: undefined,
+    memory: [],
+    active: true
+};
+//Creating a NxN matrix
+for (let i = 0; i < gameState.size; i++) {
+    gameState.memory[i] = [];
+    for (let j = 0; j < gameState.size; j++) {
+        gameState.memory[i][j] = undefined;
     }
 }
 
-//  TODO: SEPARATE HTML FROM ACTUAL CODE
+
+//Binding Html and game logic
+const cells: NodeListOf<Element> = document.querySelectorAll(".cell");
 for (let i = 0; i < cells.length; i++) {
-    let memPosition = mapListToSquareMatrix(i, gameSize);
+    let memPosition = mapListToSquareMatrix(i, gameState.size);
     cells[i].setAttribute('data-x', `${memPosition.x}`);
     cells[i].setAttribute('data-y', `${memPosition.y}`);
     cells[i].addEventListener('click', handleCellClick);
-    //cellList[i].innerHTML = '';
-    gameMemory[memPosition.x][memPosition.y] = cells[i];
 }
-buttons.forEach(btn => btn.addEventListener('click', handleCellClick));
+//buttons.forEach(btn => btn.addEventListener('click', handleCellClick));
 
 
 //###UTIL FUNCTIONS
@@ -46,67 +55,68 @@ function mapListToSquareMatrix(listIndex: number, matrixSize: number) {
     }
     return result;
 }
+function mapSquareMatrixToList(mx: number, my: number, matrixSize: number): number {
+    return matrixSize * my + mx;
+}
 
-function checkWin(matrix: object[], label: string) {
+function checkWin(matrix: object[]): boolean {
     //Check columns
     for (let i = 0; i < matrix.length; i++) {
-        let tmp = matrix[i][0].innerText;
-        if (tmp == '') continue;//if first square is void no point furter check
+        let tmp = matrix[i][0];
+        if (tmp == undefined) continue;//if first square is void no point furter check
         for (let j = 1; j < matrix.length; j++) {
-            if (matrix[i][j].innerText != tmp) break;
-            if (j == matrix.length - 1) console.log(`${tmp} wins`);
+            if (matrix[i][j] != tmp) break;
+            if (j == matrix.length - 1) return true;
         }
     }
     //Check rows
     for (let i = 0; i < matrix.length; i++) {
-        let tmp = matrix[0][i].innerText;
-        if (tmp == '') continue;//if first square is void no point furter check
+        let tmp = matrix[0][i];
+        if (tmp == undefined) continue;//if first square is void no point furter check
         for (let j = 1; j < matrix.length; j++) {
-            if (matrix[j][i].innerText != tmp) break;
-            if (j == matrix.length - 1) console.log(`${tmp} wins`);
+            if (matrix[j][i] != tmp) break;
+            if (j == matrix.length - 1) return true;
         }
     }
     //Check diagonals
-    let tmp = matrix[0][0].innerText;
-    for(let i = 1; i < matrix.length; i++){
-        if(tmp == '') break;
-        if(matrix[i][i].innerText != tmp) break;
-        if (i == matrix.length - 1) console.log(`${tmp} wins`);
+    let tmp = matrix[0][0];
+    for (let i = 1; i < matrix.length; i++) {
+        if (tmp == undefined) break;
+        if (matrix[i][i] != tmp) break;
+        if (i == matrix.length - 1) return true;
     }
-    tmp = matrix[0][matrix.length - 1].innerText;
-    for(let i = 1; i < matrix.length; i++){
-        if(tmp == '') break;
-        if(matrix[i][matrix.length -1 - i].innerText != tmp) break;
-        if (i == matrix.length - 1) console.log(`${tmp} wins`);
+    tmp = matrix[0][matrix.length - 1];
+    for (let i = 1; i < matrix.length; i++) {
+        if (tmp == undefined) break;
+        if (matrix[i][matrix.length - 1 - i] != tmp) break;
+        if (i == matrix.length - 1) return true;
     }
+    return false;
 }
 
 
 //AKA GAME LOOP
 function handleCellClick(event: Event) {
+    if (gameState.active == false) return;
+
     //###STAGE_1 PROCESS IMPUT
     let target: HTMLDivElement = (event.target as HTMLDivElement);
     let x: number = parseInt(target.getAttribute('data-x'));
     let y: number = parseInt(target.getAttribute('data-y'));
-    let cellText: string = target.innerText;
-
-
-    if (turn == GameTurn.X) {
-        turn = GameTurn.O;
-    } else turn = GameTurn.X;
 
     //###STAGE_2 UPDATE STATE
-    checkWin(gameMemory, turn);
-    //RENDER
-    if (target.constructor.name == HTMLDivElement.name) {
-        console.log("This is a HTMLDivElement");
-        (target as HTMLDivElement).innerText = turn;
-    } else if (target.constructor.name == HTMLButtonElement.name) {
-        console.log("This is a HTMLButtonElement");
+    if (gameState.symbol == PlayerSymbol.X) {
+        gameState.symbol = PlayerSymbol.O;
+    } else gameState.symbol = PlayerSymbol.X;
+    gameState.memory[x][y] = gameState.symbol;
+    if (checkWin(gameState.memory)) {
+        gameState.winner = gameState.symbol;
+        gameState.active = false;
     }
 
-    //console.log(typeof event, typeof target, target.constructor.name, event.type);
-    //console.log(((target as HTMLDivElement).getAttribute('data-cell-index')));
+    //RENDER
+    (target as HTMLDivElement).innerText = gameState.symbol;
+
 }
 
-export { Hub, gameMemory };
+export { Hub, gameState, mapListToSquareMatrix, mapSquareMatrixToList };
