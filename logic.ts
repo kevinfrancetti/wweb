@@ -4,6 +4,18 @@ import { Hub } from './tree.js';
 //Debug proupose
 console.log('type for import stuff for debugging: import(\'/scripts/logic.js\').then( m => module = m); ');
 
+/*
+setInterval(function () { console.log('merda') }, 100);
+document.querySelector('.game--restart').addEventListener('click', longtime);
+function longtime(){
+    let o = undefined;
+    for(let i = 0; i < 100000000; i++){
+        o = new String(i);
+    }
+    console.log('longtime ended');
+    console.log(o);
+}
+*/
 
 //###GAME SETUP
 const buttons: NodeListOf<Element> = document.querySelectorAll("button");
@@ -34,6 +46,14 @@ for (let i = 0; i < gameState.size; i++) {
     }
 }
 
+let rotation = 0;
+let interval = setInterval(() => {
+    document.querySelectorAll('.icon').forEach( (el) => {
+        (el as HTMLElement).style.transform = `rotate(${rotation}deg)`;
+        rotation = (rotation + 5) % 360;
+    }  )
+}, 1000);
+clearInterval(interval);
 
 //Binding Html and game logic
 const cells: NodeListOf<Element> = document.querySelectorAll(".cell");

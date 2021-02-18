@@ -22,8 +22,11 @@ section{
     border: 5px solid #32afce;
     margin: 0px;
 
+    display: flex;
+    flex-direction: column;
+
     //text-align: center;
-    background-color: rgb(49, 11, 184);
+    background-color: #44275a;
 }
 
 .game--container{
@@ -43,8 +46,9 @@ section{
     padding: 5px;
     border: 2px solid black;
     background-color: rgba(42, 130, 165, 0.459);
+
+    text-align: center;
     //justify-self: center;
-    //text-align: center;
     //height: 42px;
 }
 
@@ -71,4 +75,20 @@ button:hover{
     color: rgb(51, 210, 30);
     background-color: darkblue;
     border: thick double #32a1ce;
+}
+
+
+.game--restart{
+    align-self: center;
+}
+
+.test{
+    display: flex;
+    justify-content: space-around;
+    background-color: black;
+    border: 2px solid red;
+}
+
+h2{
+    text-align: center;
 }
