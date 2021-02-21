@@ -47,9 +47,10 @@ section{
     border: 2px solid black;
     background-color: rgba(42, 130, 165, 0.459);
 
-    text-align: center;
-    //justify-self: center;
-    //height: 42px;
+    display: flex;
+    min-height: 15px;
+    justify-content: center;
+    align-items: center;
 }
 
 .cell:hover{

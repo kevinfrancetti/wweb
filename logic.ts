@@ -25,18 +25,20 @@ enum PlayerSymbol {
 }
 interface GameEnviroment {
     size: number;
-    symbol: PlayerSymbol;
+    turn: PlayerSymbol;
     winner: PlayerSymbol;
     memory: object[]; //Is a square matrix
     active: boolean;
+    statusMsg: string;
 };
 //#GAME STATE
 const gameState: GameEnviroment = {
     size: 4,
-    symbol: PlayerSymbol.X,
+    turn: PlayerSymbol.X,
     winner: undefined,
     memory: [],
-    active: true
+    active: true,
+    statusMsg: undefined
 };
 //Creating a NxN matrix
 for (let i = 0; i < gameState.size; i++) {
@@ -48,12 +50,12 @@ for (let i = 0; i < gameState.size; i++) {
 
 let rotation = 0;
 let interval = setInterval(() => {
-    document.querySelectorAll('.icon').forEach( (el) => {
+    document.querySelectorAll('.icon').forEach((el) => {
         (el as HTMLElement).style.transform = `rotate(${rotation}deg)`;
         rotation = (rotation + 5) % 360;
-    }  )
+    })
 }, 1000);
-clearInterval(interval);
+//clearInterval(interval);
 
 //Binding Html and game logic
 const cells: NodeListOf<Element> = document.querySelectorAll(".cell");
@@ -75,8 +77,8 @@ function mapListToSquareMatrix(listIndex: number, matrixSize: number) {
     }
     return result;
 }
-function mapSquareMatrixToList(mx: number, my: number, matrixSize: number): number {
-    return matrixSize * my + mx;
+function mapSquareMatrixToList(x: number, y: number, matrixSize: number): number {
+    return matrixSize * y + x;
 }
 
 function checkWin(matrix: object[]): boolean {
@@ -117,25 +119,36 @@ function checkWin(matrix: object[]): boolean {
 
 //AKA GAME LOOP
 function handleCellClick(event: Event) {
-    if (gameState.active == false) return;
 
-    //###STAGE_1 PROCESS IMPUT
-    let target: HTMLDivElement = (event.target as HTMLDivElement);
-    let x: number = parseInt(target.getAttribute('data-x'));
-    let y: number = parseInt(target.getAttribute('data-y'));
+    if (gameState.active == true) {
+        //###STAGE_1 PROCESS IMPUT
+        let target: HTMLDivElement = (event.target as HTMLDivElement);
+        let x: number = parseInt(target.getAttribute('data-x'));
+        let y: number = parseInt(target.getAttribute('data-y'));
 
-    //###STAGE_2 UPDATE STATE
-    if (gameState.symbol == PlayerSymbol.X) {
-        gameState.symbol = PlayerSymbol.O;
-    } else gameState.symbol = PlayerSymbol.X;
-    gameState.memory[x][y] = gameState.symbol;
-    if (checkWin(gameState.memory)) {
-        gameState.winner = gameState.symbol;
-        gameState.active = false;
+        //###STAGE_2 UPDATE STATE
+        let playedTurn: PlayerSymbol = gameState.turn;
+        if (gameState.turn == PlayerSymbol.X) {
+            gameState.turn = PlayerSymbol.O;
+        } else gameState.turn = PlayerSymbol.X;
+        gameState.memory[x][y] = gameState.turn;
+        gameState.statusMsg = `Player ${gameState.turn} turn`;
+        if (checkWin(gameState.memory)) {
+            gameState.winner = playedTurn;
+            gameState.active = false;
+            gameState.statusMsg = `Player ${gameState.winner} WINS`;
+        }
+
+        //RENDER
+        (target as HTMLDivElement).innerText = playedTurn;
+        (document.querySelector('.game--status') as HTMLHeadElement).innerText = gameState.statusMsg;
+        //statusBar.innerText = 'AA';
+    } else {
+        (document.querySelector('.game--status') as HTMLHeadElement).innerText = `${gameState.statusMsg} fag`;
+      //  statusBar.innerText = 'bb';
+
     }
 
-    //RENDER
-    (target as HTMLDivElement).innerText = gameState.symbol;
 
 }
 
