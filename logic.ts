@@ -54,8 +54,8 @@ let interval = setInterval(() => {
         (el as HTMLElement).style.transform = `rotate(${rotation}deg)`;
         rotation = (rotation + 5) % 360;
     })
-}, 1000);
-//clearInterval(interval);
+}, 2000);
+clearInterval(interval);
 
 //Binding Html and game logic
 const cells: NodeListOf<Element> = document.querySelectorAll(".cell");
@@ -63,9 +63,9 @@ for (let i = 0; i < cells.length; i++) {
     let memPosition = mapListToSquareMatrix(i, gameState.size);
     cells[i].setAttribute('data-x', `${memPosition.x}`);
     cells[i].setAttribute('data-y', `${memPosition.y}`);
-    cells[i].addEventListener('click', handleCellClick);
+    cells[i].innerHTML = '&nbsp;';
+    cells[i].addEventListener('click', handleCellClick, {once: true});
 }
-//buttons.forEach(btn => btn.addEventListener('click', handleCellClick));
 
 
 //###UTIL FUNCTIONS
