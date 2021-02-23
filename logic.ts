@@ -33,7 +33,7 @@ interface GameEnviroment {
 };
 //#GAME STATE
 const gameState: GameEnviroment = {
-    size: 4,
+    size: 5,
     turn: PlayerSymbol.X,
     winner: undefined,
     memory: [],
@@ -55,9 +55,11 @@ let interval = setInterval(() => {
         rotation = (rotation + 5) % 360;
     })
 }, 2000);
-clearInterval(interval);
+//clearInterval(interval);
 
 //Binding Html and game logic
+
+/*
 const cells: NodeListOf<Element> = document.querySelectorAll(".cell");
 for (let i = 0; i < cells.length; i++) {
     let memPosition = mapListToSquareMatrix(i, gameState.size);
@@ -65,6 +67,21 @@ for (let i = 0; i < cells.length; i++) {
     cells[i].setAttribute('data-y', `${memPosition.y}`);
     cells[i].innerHTML = '&nbsp;';
     cells[i].addEventListener('click', handleCellClick, {once: true});
+}
+*/
+
+//EXPERIMENTAL
+const divContainer = document.querySelector('.game--grid');
+
+for(let i = 0; i < gameState.size * gameState.size; i++){
+    let memPosition = mapListToSquareMatrix(i, gameState.size);
+    let div = document.createElement('div');
+    div.innerHTML = '&nbsp';
+    div.setAttribute('data-x', `${memPosition.x}`);
+    div.setAttribute('data-y', `${memPosition.y}`);
+    div.innerHTML = '&nbsp;';
+    div.addEventListener('click', handleCellClick, {once: true});
+    divContainer.appendChild(div);
 }
 
 
