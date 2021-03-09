@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "outDir": "out"
+    "outDir": "out",
+    "noUnusedParameters": true,
+    "pretty": true,
+    "strict": true,
+    "noImplicitThis": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false
   }
 }
