@@ -6,11 +6,20 @@ console.log('type for import stuff for debugging: import(\'/scripts/logic.js\').
 
 //###GAME SETUP
 const buttons: NodeListOf<Element> = document.querySelectorAll("button");
+
 enum PlayerSymbol {
     X = 'X',
     O = 'O'
 }
-
+enum CmdType {
+    CELL,
+    RESET,
+    OHTER
+}
+enum Rendertype {
+    CELL,
+    OTHER
+}
 interface GameEnviroment {
     size: number;
     turn: PlayerSymbol;
@@ -18,34 +27,43 @@ interface GameEnviroment {
     memory: PlayerSymbol[][]; //This will be a square matrix
     active: boolean;
     statusMsg: string;
-    hasWin: () => boolean;
+    hasWin?: () => boolean;
 };
-//#GAME STATE
-function Game() {
-    this.size = 3;
-    this.turn = PlayerSymbol.X;
-    this.winner = undefined;
-    this.memory = [];
-    this.active = true;
-    this.statusMsg = undefined;
+//This should contains only pure functions
+interface GameUtils {
+    createEmptyMemory: (size: number) => PlayerSymbol[][];
+    checkWin: (matrix: PlayerSymbol[][]) => boolean;
 }
-Game.prototype.hasWin = function () { return checkWin((this as GameEnviroment).memory); }
+interface Game {
+    state: GameEnviroment;
+    utils: GameUtils
+}
+interface Command {
+    cmdType: CmdType;
+    name: string;
+    x?: number;
+    y?: number;
+}
+interface Rend {
+    type: Rendertype;
+    x?: number;
+    y?: number;
+    size?: number;
+    turn: PlayerSymbol;
+}
 
-let gameState: GameEnviroment = new Game();
-
-
-
-function Utils() { };
-//Utils.prototype.win = checkWin;
-
-
-//let gameState = GameE(); 
-
-//Creating a NxN matrix for the game state memory
-for (let i = 0; i < gameState.size; i++) {
-    gameState.memory[i] = [];
-    for (let j = 0; j < gameState.size; j++) {
-        gameState.memory[i][j] = undefined;
+let game: Game = {
+    state: {
+        size: 3,
+        turn: PlayerSymbol.X,
+        winner: undefined,
+        memory: createEmptyMemory(3),
+        active: true,
+        statusMsg: undefined
+    },
+    utils: {
+        createEmptyMemory: createEmptyMemory,
+        checkWin: checkWin
     }
 }
 
@@ -60,9 +78,9 @@ clearInterval(interval);
 
 //Insert grid elements iside the grid in the html and bind them with functionality
 const divContainer = document.querySelector('.game--grid');
-(divContainer as HTMLDivElement).style.gridTemplateColumns = `repeat(${gameState.size}, 1fr)`;
-for (let i = 0; i < gameState.size * gameState.size; i++) {
-    let memPosition = mapListToSquareMatrix(i, gameState.size);
+(divContainer as HTMLDivElement).style.gridTemplateColumns = `repeat(${game.state.size}, 1fr)`;
+for (let i = 0; i < game.state.size * game.state.size; i++) {
+    let memPosition = mapListToSquareMatrix(i, game.state.size);
     let div = document.createElement('div');
     div.innerHTML = '&nbsp';//TODO try do same thing whit CSS pseudo elements
     div.setAttribute('data-x', `${memPosition.x}`);
@@ -71,11 +89,20 @@ for (let i = 0; i < gameState.size * gameState.size; i++) {
     div.addEventListener('click', handleCellClick, { once: true });
     divContainer.appendChild(div);
 }
+document.querySelector('.game--restart').addEventListener('click', handleReset);
 
-document.querySelector('.game--restart').addEventListener('click', () => { console.log('yolo') });
-
-//###UTIL FUNCTIONS
+//###UTIL PURE FUNCTIONS
 //Translates the index of a list into the coordinates of a matrix, matrix should be square.
+function createEmptyMemory(size: number): PlayerSymbol[][] {
+    let memory = [];
+    for (let i = 0; i < size; i++) {
+        memory[i] = [];
+        for (let j = 0; j < size; j++) {
+            memory[i][j] = undefined;
+        }
+    }
+    return memory;
+}
 function mapListToSquareMatrix(listIndex: number, matrixSize: number) {
     let result = {
         x: listIndex % matrixSize,
@@ -86,7 +113,6 @@ function mapListToSquareMatrix(listIndex: number, matrixSize: number) {
 function mapSquareMatrixToList(x: number, y: number, matrixSize: number): number {
     return matrixSize * y + x;
 }
-
 function checkWin(matrix: PlayerSymbol[][]): boolean {
     //Check columns
     for (let i = 0; i < matrix.length; i++) {
@@ -123,28 +149,6 @@ function checkWin(matrix: PlayerSymbol[][]): boolean {
 }
 
 
-enum CmdType {
-    CELL,
-    RESET,
-    OHTER
-}
-enum Rendertype {
-    CELL,
-    OTHER
-}
-
-interface Command {
-    cmdType: CmdType;
-    name: string;
-    x?: number;
-    y?: number;
-}
-
-function Render(render) {
-    this.render = render;
-}
-
-
 //Transform input in command
 function inputHandeler(event: Event): Command {
     let target: HTMLDivElement = (event.target as HTMLDivElement);
@@ -154,67 +158,44 @@ function inputHandeler(event: Event): Command {
     return cmd;
 }
 
-
-
 //Update the state of the game, and returns what should be rendered
-function update(cmd: Command, _gameState: GameEnviroment) {
-
-    let msg: string = `cell ${cmd.x}, ${cmd.y}`;
-    console.log(msg);
-    let renderFunc = undefined;
-
+function update(cmd: Command, _gameState: GameEnviroment): Rend {
+    let returnValue = undefined;
     if (cmd.cmdType == CmdType.CELL) {
         let playedTurn: PlayerSymbol = _gameState.turn;
         _gameState.turn = _gameState.turn == PlayerSymbol.X ? PlayerSymbol.O : PlayerSymbol.X;
         _gameState.memory[cmd.x][cmd.y] = playedTurn;
         _gameState.statusMsg = `Player ${playedTurn} turn`;
-        if (_gameState.hasWin()) {
+        if (checkWin(_gameState.memory)) {
             _gameState.winner = playedTurn;
             _gameState.active = false;
             _gameState.statusMsg = `Player ${_gameState.winner} WINS`;
         }
-        let renderInfo = { type: Rendertype.CELL, x: cmd.x, y: cmd.y, text: playedTurn }
-
-        renderFunc = () => {
-            (document.querySelector(
-                `div.game--grid > div:nth-child(${1 + mapSquareMatrixToList(cmd.x, cmd.y, _gameState.size)})`
-            ) as HTMLElement).innerText = playedTurn;
-        }
-
+        let renderInfo: Rend = { type: Rendertype.CELL, x: cmd.x, y: cmd.y, turn: playedTurn, size: _gameState.size }
+        returnValue = renderInfo;
     }
-
-
-    console.log(mapSquareMatrixToList(cmd.x, cmd.y, _gameState.size));
-    let render = new Render(renderFunc);
-    return render;
+    return returnValue;
 }
 
+function renderCell(rendInfo: Rend) {
+    let divNthPosition: number = mapSquareMatrixToList(rendInfo.x, rendInfo.y, rendInfo.size);
+    let query: string = `div.game--grid > div:nth-child(${1 + divNthPosition})`;
+    (document.querySelector(query) as HTMLDivElement).innerText = rendInfo.turn;
+}
 
 //AKA GAME LOOP
 function handleCellClick(event: Event) {
-
-    if (gameState.active == true) {
-        //###STAGE_1 PROCESS IMPUT
-
-        //let cmd1: Command = { execute: inputHandler(event) };
+    if (game.state.active == true) {
         let cmd = inputHandeler(event);
-
-        let render = update(cmd, gameState);
-        render.render();
-        //updateState(cmd1, gameState);
-
-        //###STAGE_2 UPDATE STATE
-        //RENDER
-        //(target as HTMLDivElement).innerText = gameState.turn;
-        //(document.querySelector('.game--status') as HTMLHeadElement).innerText = gameState.statusMsg;
-        //statusBar.innerText = 'AA';
-    } else {
-        //(document.querySelector('.game--status') as HTMLHeadElement).innerText = `${gameState.statusMsg} fag`;
-        //  statusBar.innerText = 'bb';
-
+        let render = update(cmd, game.state);
+        renderCell(render);
     }
-
-
 }
 
-export { Hub, gameState, mapListToSquareMatrix, mapSquareMatrixToList, inputHandeler as realInputHandeler };
+//TMP FUNCTION
+function handleReset(event: Event) {
+    console.log({event: event, target: event.target});
+    game.state.memory = game.utils.createEmptyMemory(game.state.size);
+    game.state.active = true;
+}
+export { Hub, game, mapListToSquareMatrix, mapSquareMatrixToList, inputHandeler };

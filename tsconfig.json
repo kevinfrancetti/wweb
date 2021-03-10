@@ -6,7 +6,7 @@
     "pretty": true,
     "strict": true,
     "noImplicitThis": false,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": false
   }
 }
