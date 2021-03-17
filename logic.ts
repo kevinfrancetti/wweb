@@ -16,9 +16,13 @@ enum CmdType {
     RESET,
     OHTER
 }
-enum Rendertype {
+enum RenderType {
     CELL,
     OTHER
+}
+enum EventType{
+    CELL = 'CELL',
+    RESET = 'RESET'
 }
 interface GameEnviroment {
     size: number;
@@ -45,7 +49,7 @@ interface Command {
     y?: number;
 }
 interface Rend {
-    type: Rendertype;
+    type: RenderType;
     x?: number;
     y?: number;
     size?: number;
@@ -83,16 +87,17 @@ for (let i = 0; i < game.state.size * game.state.size; i++) {
     let memPosition = mapListToSquareMatrix(i, game.state.size);
     let div = document.createElement('div');
     div.innerHTML = '&nbsp';//TODO try do same thing whit CSS pseudo elements
+    div.setAttribute('class', `${EventType.CELL}`);
     div.setAttribute('data-x', `${memPosition.x}`);
     div.setAttribute('data-y', `${memPosition.y}`);
     div.innerHTML = '&nbsp;';
     div.addEventListener('click', handleCellClick, { once: true });
     divContainer.appendChild(div);
 }
-document.querySelector('.game--restart').addEventListener('click', handleReset);
+document.querySelector('.game--restart').setAttribute('class', `${EventType.RESET}`)
+document.querySelector(`.${EventType.RESET}`).addEventListener('click', handleReset);
 
 //###UTIL PURE FUNCTIONS
-//Translates the index of a list into the coordinates of a matrix, matrix should be square.
 function createEmptyMemory(size: number): PlayerSymbol[][] {
     let memory = [];
     for (let i = 0; i < size; i++) {
@@ -103,6 +108,7 @@ function createEmptyMemory(size: number): PlayerSymbol[][] {
     }
     return memory;
 }
+//Translates the index of a list into the coordinates of a matrix, matrix should be square.
 function mapListToSquareMatrix(listIndex: number, matrixSize: number) {
     let result = {
         x: listIndex % matrixSize,
@@ -171,7 +177,7 @@ function update(cmd: Command, _gameState: GameEnviroment): Rend {
             _gameState.active = false;
             _gameState.statusMsg = `Player ${_gameState.winner} WINS`;
         }
-        let renderInfo: Rend = { type: Rendertype.CELL, x: cmd.x, y: cmd.y, turn: playedTurn, size: _gameState.size }
+        let renderInfo: Rend = { type: RenderType.CELL, x: cmd.x, y: cmd.y, turn: playedTurn, size: _gameState.size }
         returnValue = renderInfo;
     }
     return returnValue;
@@ -194,8 +200,6 @@ function handleCellClick(event: Event) {
 
 //TMP FUNCTION
 function handleReset(event: Event) {
-    console.log({event: event, target: event.target});
-    game.state.memory = game.utils.createEmptyMemory(game.state.size);
-    game.state.active = true;
+    console.log('ola');
 }
 export { Hub, game, mapListToSquareMatrix, mapSquareMatrixToList, inputHandeler };
